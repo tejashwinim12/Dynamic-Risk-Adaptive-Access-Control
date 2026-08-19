@@ -27,3 +27,6 @@ draac_dataset.csv
 
 # Logs
 *.log
+
+# Personal project documentation
+*.docx
