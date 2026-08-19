@@ -100,9 +100,8 @@ DRAAC
 │
 ├── draac-frontend/
 │
-├── screenshots/
-│
-└── risk_model.pkl
+└── screenshots/
+
 ```
 
 ---
@@ -168,6 +167,8 @@ python export_dataset.py
 ```
 
 Train the Random Forest model:
+
+The trained model file (`risk_model.pkl`) is generated locally and excluded from Git using `.gitignore`.
 
 ```bash
 python train_model.py
@@ -257,25 +258,29 @@ The AI prediction is combined with the rule-based risk engine to make adaptive a
 
 ## 📸 Screenshots
 
-Add screenshots inside:
+### Login
+![Login](screenshots/login.png)
 
-```
-screenshots/
-```
+### Dashboard - Overview
+![Dashboard Overview](screenshots/dashboard_1.png)
 
-Suggested screenshots:
+### Dashboard - Risk Monitoring
+![Dashboard Risk Monitoring](screenshots/dashboard_2.png)
 
-- Login (ALLOW)
-- RESTRICT Response
-- REVOKE Response
-- Swagger UI
-- Dashboard
-- PostgreSQL Logs
-- AI Prediction
-- Protected API
-- Verification API
+### Access Granted
+![Allow](screenshots/allow.png)
 
----
+### Restricted Access
+![Restrict](screenshots/restrict.png)
+
+### Access Revoked
+![Revoke](screenshots/revoke.png)
+
+### Swagger API
+![Swagger](screenshots/swagger.png)
+
+### PostgreSQL Logs
+![PostgreSQL Logs](screenshots/postgresql-logs.png)
 
 ## 🔮 Future Enhancements
 
