@@ -1,3 +1,4 @@
+import json
 import joblib
 import pandas as pd
 from fastapi import Depends
@@ -19,10 +20,32 @@ from database import Base, engine, SessionLocal
 from models import User, LoginLog
 
 from passlib.context import CryptContext
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "draac_super_secret_key"
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY is not configured")
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+ACCESS_TOKEN_EXPIRE_MINUTES = int(
+    os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")
+)
+
+MFA_VERIFICATION_CODE = os.getenv(
+    "MFA_VERIFICATION_CODE",
+    "123456"
+)
+
+FRONTEND_ORIGIN = os.getenv(
+    "FRONTEND_ORIGIN",
+    "http://localhost:3000"
+)
 
 # Load AI model
 ai_model = joblib.load("risk_model.pkl")
@@ -82,7 +105,7 @@ app = FastAPI(title="Dynamic Risk Adaptive Access Control")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[FRONTEND_ORIGIN],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -280,7 +303,7 @@ def verify_user(user_id: str, req: VerifyRequest):
             )
 
         # Demo MFA code
-        if req.verification_code != "123456":
+        if req.verification_code != MFA_VERIFICATION_CODE:
             raise HTTPException(
                 status_code=401,
                 detail="Invalid verification code"
@@ -478,6 +501,7 @@ def login(req: LoginRequest):
         )
 
         user.risk_score = risk
+        user.ai_confidence = round(confidence)
         user.access_status = status
         user.reasons = json.dumps(reasons)
         user.last_checked = datetime.now(timezone.utc).isoformat()
@@ -508,7 +532,15 @@ def login(req: LoginRequest):
             "message": "Login successful",
             "user_id": req.user_id,
             "risk_score": risk,
-            "access_status": status
+            "access_status": status,
+            "reasons": reasons,
+            "ai_prediction": ai_prediction,
+            "ai_confidence": round(confidence, 2),
+            "last_checked": user.last_checked,
+            "device_id": user.device_id,
+            "city": user.city,
+            "country": user.country,
+            "ip_address": user.ip_address
         }
 
     finally:
@@ -574,6 +606,7 @@ def get_status(user_id: str):
             "known_locations": json.loads(user.known_locations or "[]"),
             "suspicious_events": user.suspicious_events,
             "risk_score": user.risk_score,
+            "ai_confidence": user.ai_confidence,
             "access_status": user.access_status,
             "is_active": user.is_active,
             "last_checked": user.last_checked,
@@ -591,7 +624,7 @@ def get_logs(user_id: str):
         logs = (
             db.query(LoginLog)
             .filter(LoginLog.user_id == user_id)
-            .order_by(LoginLog.created_at.desc())
+            .order_by(LoginLog.created_at.desc()).limit(10)
             .all()
         )
 

@@ -1,0 +1,14 @@
+.dashboard-page{
+    min-height:100vh;
+    background:#0F172A;
+    padding:30px;
+}
+
+.dashboard-title{
+    color:white;
+    font-weight:700;
+}
+
+.dashboard-subtitle{
+    color:#CBD5E1;
+}

@@ -1,0 +1,23 @@
+:root {
+    --bg-color: #0F172A;
+    --card-bg: #1E293B;
+    --primary: #2563EB;
+    --success: #22C55E;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --text: #FFFFFF;
+    --text-light: #CBD5E1;
+    --border: #334155;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-color);
+    color: var(--text);
+    font-family: "Segoe UI", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}

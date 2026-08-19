@@ -16,6 +16,7 @@ class User(Base):
     country = Column(String, nullable=False)
     ip_address = Column(String, nullable=False)
     risk_score = Column(Integer, default=0)
+    ai_confidence = Column(Integer, default=0)
     access_status = Column(String, default="ALLOW")
     is_active = Column(Boolean, default=True)
     reasons = Column(Text, default="")
